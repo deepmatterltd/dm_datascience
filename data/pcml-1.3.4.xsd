@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd" />
+    <xs:simpleType name="guid">
+        <xs:restriction base="xs:string">
+            <xs:length value="36" />
+            <xs:pattern value="\{[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}\}" />
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- ELEMENTS -->
+    <xs:element name="pcml">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element ref="description" minOccurs="0" />
+                <xs:element ref="meta" />
+                <xs:element ref="synopsis" />
+                <xs:element ref="chemistry" />
+                <xs:element ref="safety" />
+                <xs:element ref="reaction-conditions" minOccurs="0" />
+                <xs:element ref="labware" minOccurs="0" />
+                <xs:element maxOccurs="unbounded" ref="step" />
+                <xs:element xmlns:q1="http://www.w3.org/2000/09/xmldsig#" minOccurs="0" ref="q1:Signature" />
+            </xs:choice>
+            <xs:attribute name="experiment" use="required" />
+            <xs:attribute name="Id" use="optional"></xs:attribute>
+            <xs:attribute name="version" use="optional"></xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="description">
+        <xs:complexType mixed="true">
+            <xs:group ref="paragraph" />
+            <xs:attributeGroup ref="attr-profiles" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="meta">
+        <xs:complexType>
+            <xs:all>
+                <xs:element ref="owner" />
+                <xs:element ref="author" />
+                <xs:element ref="version" />
+                <xs:element ref="version-author" />
+                <xs:element ref="version-owner" />
+                <xs:element ref="publication" />
+                <xs:element ref="custom-tag" />
+                <xs:element ref="creation-date" minOccurs="0" />
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="custom-tag" type="xs:string" />
+    <xs:element name="author" type="xs:string" />
+    <xs:element name="owner" type="xs:string" />
+    <xs:element name="version" type="xs:string" />
+    <xs:element name="version-author" type="xs:string" />
+    <xs:element name="version-owner" type="xs:string" />
+    <xs:element name="publication" type="xs:string" />
+    <xs:element name="creation-date" type="xs:string" />
+
+    <xs:element name="synopsis">
+        <xs:complexType mixed="true">
+            <xs:group maxOccurs="unbounded" ref="paragraph" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="labware">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="equipment" />
+                <xs:element ref="reactionware" />
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="chemistry">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element ref="reaction-scheme" />
+                    <xs:element ref="img" />
+                    <xs:element ref="smiles" />
+                    <xs:element minOccurs="0" maxOccurs="1" ref="chemicals" />
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="chemicals">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="chemical" maxOccurs="unbounded" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="reaction-scheme">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" ref="inputs" />
+                <xs:element minOccurs="0" ref="outputs" />
+                <xs:element minOccurs="0" ref="reaction-kind" />
+                <xs:element minOccurs="0" ref="reaction-conditions" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="smiles" type="xs:string" />
+
+    <xs:element name="img">
+        <xs:complexType>
+            <xs:attributeGroup ref="attr-profile" />
+            <xs:attribute name="src" use="required" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="inputs">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="chemical" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="outputs">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="chemical" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="chemical">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="smiles" minOccurs="0" maxOccurs="1" />
+                <xs:element name="inchi" minOccurs="0" type="xs:string" />
+                <xs:element name="name" minOccurs="0" type="xs:string" />
+                <xs:element ref="formula" minOccurs="0" />
+                <xs:element name="cas" minOccurs="0" type="xs:string" />
+                <xs:element ref="safetycode" maxOccurs="unbounded" minOccurs="0" />
+            </xs:sequence>
+            <xs:attributeGroup ref="attr-chemical-data" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="formula">
+        <xs:complexType mixed="true">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="sub" />
+                <xs:element ref="sup" />
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="sub" type="xs:string" />
+    <xs:element name="sup" type="xs:string" />
+
+    <xs:element name="reaction-conditions">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element minOccurs="0" maxOccurs="1" ref="inner" />
+                <xs:element minOccurs="0" maxOccurs="1" ref="outer" />
+                <xs:element minOccurs="0" maxOccurs="1" ref="enviromental" />
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="outer">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element minOccurs="0" ref="temperature" />
+                <xs:element minOccurs="0" ref="timing" />
+                <xs:element minOccurs="0" ref="stirring" />
+                <xs:element minOccurs="0" ref="pressure" />
+                <xs:element minOccurs="0" ref="light" />
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="inner">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element minOccurs="0" ref="temperature" />
+                <xs:element minOccurs="0" ref="pH" />
+                <xs:element minOccurs="0" ref="timing" />
+                <xs:element minOccurs="0" ref="stirring" />
+                <xs:element minOccurs="0" ref="pressure" />
+                <xs:element minOccurs="0" ref="light" />
+                <xs:element minOccurs="0" ref="atmosphere" />
+                <xs:element minOccurs="0" ref="moisture" />
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="enviromental">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element minOccurs="0" ref="temperature" />
+                <xs:element minOccurs="0" ref="timing" />
+                <xs:element minOccurs="0" ref="pressure" />
+                <xs:element minOccurs="0" ref="light" />
+                <xs:element minOccurs="0" ref="atmosphere" />
+                <xs:element minOccurs="0" ref="moisture" />
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="atmosphere">
+        <xs:complexType mixed="true">
+            <xs:attribute name="value" />
+            <xs:attribute name="unit" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="moisture">
+        <xs:complexType mixed="true">
+            <xs:attribute name="value" />
+            <xs:attribute name="unit" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="pH">
+        <xs:complexType mixed="true">
+            <xs:attribute name="value" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="light">
+        <xs:complexType mixed="true">
+            <xs:attribute name="unit" />
+            <xs:attribute name="value" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="temperature">
+        <xs:complexType mixed="true">
+            <xs:attribute name="unit" />
+            <xs:attribute name="value" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="timing">
+        <xs:complexType mixed="true">
+            <xs:attribute name="months" use="optional" />
+            <xs:attribute name="days" use="optional" />
+            <xs:attribute name="hours" use="optional" />
+            <xs:attribute name="minutes" use="optional" />
+            <xs:attribute name="seconds" use="optional" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="stirring">
+        <xs:complexType mixed="true">
+            <xs:attribute name="unit" />
+            <xs:attribute name="value" />
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="pressure">
+        <xs:complexType mixed="true">
+            <xs:attribute name="value" />
+            <xs:attribute name="unit" />
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="reaction-kind" type="xs:string" />
+
+    <xs:element name="safety">
+        <xs:complexType>
+            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:group maxOccurs="unbounded" ref="secondary" />
+                <xs:element ref="safetycode" maxOccurs="unbounded" minOccurs="0" />
+            </xs:choice>
+            <xs:attributeGroup ref="attr-profiles" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="safetycode">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="code" type="xs:string" />
+                <xs:element name="description" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="step">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="1" ref="description" />
+                <xs:element maxOccurs="unbounded" ref="group" />
+                <xs:group minOccurs="0" ref="secondary" />
+            </xs:sequence>
+            <xs:attribute name="type" type="xs:string" />
+            <xs:attribute name="label" type="xs:string" />
+            <xs:attribute name="id" type="xs:string" />
+            <xs:attributeGroup ref="attr-flatten-profile" />
+            <xs:attributeGroup ref="attr-flatten-profiles" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="group">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="description" minOccurs="0" />
+                <xs:element minOccurs="0" ref="title" />
+                <xs:choice>
+                    <xs:element minOccurs="0" ref="parallelism" />
+                    <xs:sequence>
+                        <xs:element ref="operation" minOccurs="1" maxOccurs="unbounded" />
+                    </xs:sequence>
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="title" type="xs:string" />
+
+    <!-- To be defined correctly START-->
+    <xs:element name="parallelism">
+        <xs:complexType>
+            <xs:group minOccurs="0" maxOccurs="unbounded" ref="secondary" />
+        </xs:complexType>
+    </xs:element>
+    <!-- To be defined correctly END-->
+
+
+    <xs:element name="operation">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" ref="text" />
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element ref="precondition" />
+                    <xs:element ref="conditional" />
+                    <xs:element ref="interrogation" />
+                    <xs:element ref="troubleshooting" />
+                    <xs:element ref="timing" />
+                    <xs:element ref="technique" />
+                    <xs:element ref="expectation" />
+                    <xs:element ref="critical" />
+                    <xs:element ref="goal" />
+                    <xs:element ref="tip" />
+                    <xs:element ref="equipment" />
+                    <xs:element ref="chemical" />
+                    <xs:element ref="reaction-kind" />
+                    <xs:element ref="characterisation" />
+                    <xs:element ref="alert" />
+                    <xs:element ref="caution" />
+                </xs:choice>
+            </xs:sequence>
+            <xs:attributeGroup ref="attr-tag" />
+            <xs:attributeGroup ref="attr-pause" />
+            <xs:attribute name="id" type="xs:string" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="precondition" type="xs:string" />
+
+    <xs:element name="text">
+        <xs:complexType mixed="true">
+            <xs:group ref="paragraph" />
+            <xs:attributeGroup ref="attr-profiles" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="interrogation">
+        <xs:complexType mixed="false">
+            <xs:sequence>
+                <xs:element name="title" type="xs:string" minOccurs="0" />
+                <xs:element name="content" type="xs:string" minOccurs="0" />
+                <xs:element name="option" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType mixed="true">
+                        <xs:attribute name="value" />
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:string" />
+            <xs:attribute name="position" default="post">
+                <xs:simpleType>
+                    <xs:restriction base="xs:token">
+                        <xs:enumeration value="pre" />
+                        <xs:enumeration value="post" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="type">
+                <xs:simpleType>
+                    <xs:restriction base="xs:token">
+                        <xs:enumeration value="gate" />
+                        <xs:enumeration value="yesno" />
+                        <xs:enumeration value="rank" />
+                        <xs:enumeration value="comment" />
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:group name="paragraph">
+        <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="formula" />
+                <xs:element ref="i" />
+            </xs:choice>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:group name="secondary">
+        <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="conditional" />
+                <xs:element ref="precondition" />
+                <xs:element ref="interrogation" />
+                <xs:element ref="troubleshooting" />
+                <xs:element ref="timing" />
+                <xs:element ref="technique" />
+                <xs:element ref="expectation" />
+                <xs:element ref="goal" />
+                <xs:element ref="tip" />
+                <xs:element ref="chemical" />
+                <xs:element ref="reaction-kind" />
+                <xs:element ref="characterisation" />
+                <xs:element ref="alert" />
+                <xs:element ref="caution" />
+            </xs:choice>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:element name="technique">
+        <xs:complexType mixed="true">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="temperature" />
+                <xs:element name="duration" />
+                <xs:element ref="label-technique" />
+                <xs:element ref="tip" />
+            </xs:choice>
+            <xs:attribute name="library" use="required" />
+            <xs:attributeGroup ref="attr-profile" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="label-technique">
+        <xs:complexType mixed="true">
+            <xs:attribute name="library" use="required" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="alert" type="xs:string" />
+    <xs:element name="caution" type="xs:string" />
+    <xs:element name="characterisation" type="xs:string" />
+    <xs:element name="conditional" type="xs:string" />
+    <xs:element name="expectation" type="xs:string" />
+    <xs:element name="goal" type="xs:string" />
+    <xs:element name="i" type="xs:string" />
+    <xs:element name="tip" type="xs:string" />
+    <xs:element name="troubleshooting" type="xs:string" />
+    <xs:element name="critical" type="xs:string" />
+
+    <!-- FUTURE ELEMENTS WIP -->
+    <xs:element name="equipment">
+        <xs:complexType mixed="false">
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="name" minOccurs="0" />
+                <xs:element name="quantity" minOccurs="0" />
+                <xs:element name="size" minOccurs="0" />
+                <xs:element name="type" minOccurs="0" />
+                <xs:element name="vendor" minOccurs="0" />
+                <xs:element name="step" minOccurs="0" />
+            </xs:choice>
+            <xs:attribute name="library" use="optional" />
+            <xs:attribute name="id" use="required" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="reactionware">
+        <xs:complexType mixed="false">
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="name" minOccurs="0" />
+                <xs:element name="quantity" minOccurs="0" />
+                <xs:element name="size" minOccurs="0" />
+                <xs:element name="type" minOccurs="0" />
+                <xs:element name="vendor" minOccurs="0" />
+                <xs:element name="step" minOccurs="0" />
+            </xs:choice>
+            <xs:attribute name="library" use="optional" />
+            <xs:attribute name="id" use="required" />
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ATTRIBUTES -->
+
+    <xs:attributeGroup name="attr-chemical-data">
+        <xs:attribute name="step" use="optional" type="xs:string" />
+        <xs:attribute ref="role" />
+        <xs:attribute name="density" use="optional" type="xs:string" />
+        <xs:attribute name="mass" use="optional" type="xs:string" />
+        <xs:attribute name="massunit" use="optional" type="xs:string" />
+        <xs:attribute name="vol" use="optional" type="xs:string" />
+        <xs:attribute name="volunit" use="optional" type="xs:string" />
+        <xs:attribute name="moles" use="optional" type="xs:string" />
+        <xs:attribute name="molweight" use="optional" type="xs:string" />
+        <xs:attribute name="concentration" use="optional" type="xs:string" />
+        <xs:attribute name="equiv" use="optional" type="xs:string" />
+        <xs:attribute name="fw" use="optional" type="xs:string" />
+        <xs:attribute name="ee" use="optional" type="xs:string" />
+        <xs:attribute name="weightPc" use="optional" type="xs:string" />
+        <xs:attribute name="volumePc" use="optional" type="xs:string" />
+        <xs:attribute name="stoichiometry" use="optional" type="xs:string" />
+        <xs:attribute name="purity" use="optional" type="xs:string" />
+        <xs:attribute name="yield" use="optional" type="xs:string" />
+        <xs:attribute name="cas" use="optional" type="xs:string" />
+        <xs:attribute name="vendor" use="optional" type="xs:string" />
+        <xs:attribute name="vendorbatchno" use="optional" type="xs:string" />
+        <xs:attribute name="condition" use="optional" type="xs:string" />
+        <xs:attribute name="appearance" use="optional" type="xs:string" />
+        <xs:attribute name="id" use="optional" type="xs:string" />
+    </xs:attributeGroup>
+    <xs:attribute name="role">
+        <xs:simpleType>
+            <xs:restriction base="xs:token">
+                <xs:enumeration value="product" />
+                <xs:enumeration value="main-product" />
+                <xs:enumeration value="byproduct" />
+                <xs:enumeration value="reagent" />
+                <xs:enumeration value="solvent" />
+                <xs:enumeration value="catalyst" />
+                <xs:enumeration value="starting-material" />
+                <xs:enumeration value="extraction-solvent" />
+                <xs:enumeration value="washing-solution" />
+                <xs:enumeration value="washing-solvent" />
+                <xs:enumeration value="drying-agent" />
+                <xs:enumeration value="quenching-solvent" />
+                <xs:enumeration value="quenching-solid" />
+                <xs:enumeration value="quenching-solution" />
+                <xs:enumeration value="stationary-phase" />
+                <xs:enumeration value="mobile-phase" />
+                <xs:enumeration value="precipitant" />
+                <xs:enumeration value="seed-crystal" />
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:attribute>
+    <xs:attributeGroup name="attr-pause">
+        <xs:attribute name="pause">
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:enumeration value="true" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+    <xs:attributeGroup name="attr-profile">
+        <xs:attribute name="level">
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:enumeration value="expert" />
+                    <xs:enumeration value="intermediate" />
+                    <xs:enumeration value="beginner" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+    <xs:attributeGroup name="attr-flatten-profile">
+        <xs:attribute name="flatten-level">
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:enumeration value="expert" />
+                    <xs:enumeration value="intermediate" />
+                    <xs:enumeration value="beginner" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+    <xs:attributeGroup name="attr-profiles">
+        <xs:attribute name="levels">
+            <xs:simpleType>
+                <xs:restriction>
+                    <xs:simpleType>
+                        <xs:list>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:token">
+                                    <xs:enumeration value="expert" />
+                                    <xs:enumeration value="intermediate" />
+                                    <xs:enumeration value="beginner" />
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:list>
+                    </xs:simpleType>
+                    <xs:minLength value="1" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+    <xs:attributeGroup name="attr-flatten-profiles">
+        <xs:attribute name="flatten-levels">
+            <xs:simpleType>
+                <xs:list>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:token">
+                            <xs:enumeration value="expert" />
+                            <xs:enumeration value="intermediate" />
+                            <xs:enumeration value="beginner" />
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:list>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+    <xs:attributeGroup name="attr-tag">
+        <xs:attribute name="tag">
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:enumeration value="true" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+</xs:schema>
