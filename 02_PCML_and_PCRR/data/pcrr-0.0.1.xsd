@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd" />
+	<xs:include schemaLocation="pcml-1.3.4.xsd" id="pcml"/>
+	<xs:simpleType name="simplified_guid">
+		<xs:restriction base="xs:string">
+			<xs:length value="36"/>
+			<xs:pattern
+				value="[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+			/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="percentage">
+		<xs:restriction base="xs:double">
+			<xs:minInclusive value="0.0"/>
+			<xs:maxInclusive value="100.0"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="skill_level">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Under Graduate"/>
+			<xs:enumeration value="Beginner"/>
+			<xs:enumeration value="Intermediate"/>
+			<xs:enumeration value="Expert"/>
+			<xs:enumeration value="Not Available"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:element name="pcrr" type="recipe_run_record"/>
+
+	<xs:complexType name="recipe_run_record">
+		<xs:sequence>
+			<xs:element name="status" type="xs:string" minOccurs="0"/>
+			<xs:element name="start_time" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="end_time" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="pause_time" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="resume_time" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="yield" type="xs:double" minOccurs="0"/>
+			<xs:element name="purity" type="percentage" minOccurs="0"/>
+			<xs:element name="user" type="user" minOccurs="0"/>
+			<xs:element name="telemetry" type="telemetry" minOccurs="0"/>
+			<xs:element name="recipe_version" type="recipe_version" minOccurs="0"/>
+			<xs:element name="operation_results">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="operation_result" type="operation_result"
+							maxOccurs="unbounded" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element xmlns:q1="http://www.w3.org/2000/09/xmldsig#" minOccurs="0" ref="q1:Signature" />
+		</xs:sequence>
+		<xs:attribute name="id" type="simplified_guid"/>
+	</xs:complexType>
+
+	<xs:complexType name="recipe_version">
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="derived_recipe" type="derived_recipe"/>
+				<xs:element name="recipe" type="recipe"/>
+			</xs:choice>
+			<xs:element name="data_json"  minOccurs="0"/>
+			<xs:element name="version_label"  minOccurs="0"/>
+			<xs:element ref="pcml" maxOccurs = "unbounded"/>
+			<xs:element minOccurs="0" name="parent_recipe_version" type="recipe_version"/>
+		</xs:sequence>
+		<xs:attribute name="version_no" use="required" type="xs:double"/>
+		<xs:attribute name="id" use="required" type="simplified_guid"/>
+	</xs:complexType>
+
+
+	<xs:complexType name="derived_recipe">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string"  minOccurs="0"/>
+			<xs:element name="derivation_type" type="derivation_type"  minOccurs="0"/>
+			<xs:element name="recipe" type="recipe"  minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+
+<xs:complexType name="telemetry">
+	<xs:sequence>
+		<xs:element name="dc" >
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="name" type="xs:string" />
+				</xs:sequence>
+				<xs:attribute name="id" type="simplified_guid" />
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="fume_hood">
+			<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" />
+			</xs:sequence>
+			<xs:attribute name="id" type="simplified_guid" />
+		</xs:complexType>
+		</xs:element>
+		<xs:element name="lab" >
+			<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" />
+			</xs:sequence>
+			<xs:attribute name="id" type="simplified_guid" />
+		</xs:complexType>
+		</xs:element>
+		<xs:element name="location" >
+			<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" />
+				<xs:element name="latitude" type="xs:double"  minOccurs="0" />
+				<xs:element name="longitude" type="xs:double"  minOccurs="0" />
+			</xs:sequence>
+			<xs:attribute name="id" type="simplified_guid" />
+		</xs:complexType>
+		</xs:element>
+		<xs:element name="organisation" >
+			<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" />
+			</xs:sequence>
+			<xs:attribute name="id" type="simplified_guid" />
+		</xs:complexType>
+		</xs:element>
+	</xs:sequence>
+</xs:complexType>
+	<xs:complexType name="derivation_type">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="simplified_guid" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="recipe">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string"  minOccurs="0"/>
+			<xs:element name="skill_level" type="skill_level"  minOccurs="0"/>
+		</xs:sequence>
+
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="variant" type="xs:string" use="required"/>
+		<xs:attribute name="library" type="xs:string" use="required"/>
+		<xs:attribute name="chemistry" type="xs:string" use="required"/>
+		<xs:attribute name="domain" type="xs:string" use="required"/>
+	</xs:complexType>
+
+
+
+	<xs:complexType name="user">
+		<xs:sequence>
+			<xs:element name="first_name" type="xs:string"  minOccurs="0"/>
+			<xs:element name="last_name" type="xs:string"  minOccurs="0"/>
+			<xs:element name="email" type="xs:string"  minOccurs="0"/>
+			<xs:element name="skill_level" type="skill_level"  minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="username" type="xs:string" use="required"/>
+		<xs:attribute name="user_id" type="simplified_guid" use="required"/>
+	</xs:complexType>
+
+
+	<xs:complexType name="operation_result">
+		<xs:sequence>
+			<xs:element name="recipe_run_progress" type="recipe_run_progress" maxOccurs="unbounded"/>
+			<xs:element name="interrogation_results">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="interrogation_result" type="interrogation_result"
+							maxOccurs="unbounded" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="notes">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="note" type="note" maxOccurs="unbounded" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="operation_id" type="simplified_guid" use="required"/>
+	</xs:complexType>
+
+
+	<xs:complexType name="recipe_run_progress">
+		<xs:sequence>
+
+			<xs:element name="completed" type="xs:boolean"  minOccurs="0"/>
+			<xs:element name="percent_completed" type="percentage"  minOccurs="0"/>
+
+			<xs:element name="start_date_time" type="xs:dateTime"/>
+			<xs:element name="end_date_time" type="xs:dateTime"  minOccurs="0"/>
+			<xs:element name="sensors"  minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="sensor_data" type="sensor_data" maxOccurs="unbounded"  minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+
+	<xs:complexType name="sensor_data">
+		<xs:sequence>
+			<xs:element name="sensor_data_record" type="sensor_data_record" maxOccurs="unbounded"
+				minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string"/>
+	</xs:complexType>
+
+
+	<xs:complexType name="sensor_data_record">
+		<xs:sequence>
+			<xs:element name="timestamp" type="xs:dateTime"  minOccurs="0"/>
+			<xs:element name="value" type="xs:string"  minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="interrogation_result">
+		<xs:sequence>
+			<xs:element name="answer" type="xs:string"  minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="interrogation_id" type="simplified_guid" use="required"/>
+	</xs:complexType>
+
+
+	<xs:complexType name="note">
+		<xs:sequence>
+			<xs:element name="note" type="xs:string"  minOccurs="0"/>
+			<xs:element name="timestamp" type="xs:dateTime"  minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
